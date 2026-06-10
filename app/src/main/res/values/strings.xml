@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">APP_WordPulse</string>
+    <string name="login">Login</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="check">Check</string>
+    <string name="type_translation">Type your translation here</string>
+</resources>
