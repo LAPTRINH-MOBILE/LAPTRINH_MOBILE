@@ -22,6 +22,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".features.auth.LoginActivity" />
+        <activity android:name=".features.exercise.DictationActivity" />
+        <activity android:name=".features.exercise.LessonListActivity" />
+        <activity android:name=".features.exercise.QuizActivity" />
+        <activity android:name=".features.grammar.GrammarActivity" />
+        <activity android:name=".features.story.StoryListActivity" />
+        <activity android:name=".features.vocabulary.FlashcardActivity" />
+        <activity android:name=".features.vocabulary.VocabTopicActivity" />
     </application>
 
 </manifest>
