@@ -5,4 +5,5 @@
     <string name="password">Password</string>
     <string name="check">Check</string>
     <string name="type_translation">Type your translation here</string>
+    <string name="back_button_description">Navigate back</string>
 </resources>
