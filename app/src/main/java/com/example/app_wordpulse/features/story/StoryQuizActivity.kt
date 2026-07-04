@@ -1,0 +1,232 @@
+package com.example.app_wordpulse.features.story
+
+import android.content.Intent
+import android.graphics.Color
+import android.os.Bundle
+import android.view.View
+import android.widget.LinearLayout
+import android.widget.RadioButton
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.toColorInt
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import com.example.app_wordpulse.R
+import com.example.app_wordpulse.data.local.database.AppDatabase
+import com.example.app_wordpulse.data.model.Story
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class StoryQuizActivity : AppCompatActivity() {
+
+    private var questionList: List<Story> = emptyList()
+    private var currentIndex = 0
+    private var score = 0
+    private var isAnswered = false
+
+    private lateinit var tvProgress: TextView
+    private lateinit var articleTextView: TextView
+    private lateinit var questionTextView: TextView
+    private lateinit var radios: List<RadioButton>
+    private lateinit var cards: List<MaterialCardView>
+    private lateinit var explanationLayout: LinearLayout
+    private lateinit var tvResultStatus: TextView
+    private lateinit var tvExplanation: TextView
+    private lateinit var actionButton: MaterialButton
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_story_quiz)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
+
+        initViews()
+
+        val topicId = intent.getIntExtra("TOPIC_ID", -1)
+        if (topicId != -1) {
+            loadQuestionsFromDb(topicId)
+        } else {
+            Toast.makeText(this, "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+    }
+
+    private fun initViews() {
+        tvProgress = findViewById(R.id.tvProgress)
+        articleTextView = findViewById(R.id.articleTextView)
+        questionTextView = findViewById(R.id.questionTextView)
+        explanationLayout = findViewById(R.id.explanationLayout)
+        tvResultStatus = findViewById(R.id.tvResultStatus)
+        tvExplanation = findViewById(R.id.tvExplanation)
+        actionButton = findViewById(R.id.actionButton)
+
+        radios = listOf(
+            findViewById(R.id.radioA),
+            findViewById(R.id.radioB),
+            findViewById(R.id.radioC),
+            findViewById(R.id.radioD)
+        )
+        cards = listOf(
+            findViewById(R.id.cardA),
+            findViewById(R.id.cardB),
+            findViewById(R.id.cardC),
+            findViewById(R.id.cardD)
+        )
+
+        radios.forEachIndexed { index, radioButton ->
+            val clickListener = View.OnClickListener {
+                if (isAnswered) return@OnClickListener
+                radios.forEach { it.isChecked = false }
+                radioButton.isChecked = true
+                updateCardSelection(index)
+            }
+            cards[index].setOnClickListener(clickListener)
+            radioButton.setOnClickListener(clickListener)
+        }
+
+        actionButton.setOnClickListener {
+            if (!isAnswered) {
+                checkAnswer()
+            } else {
+                nextQuestion()
+            }
+        }
+    }
+
+    private fun loadQuestionsFromDb(topicId: Int) {
+        val db = AppDatabase.getDatabase(this)
+        lifecycleScope.launch {
+            val stories = withContext(Dispatchers.IO) {
+                db.storyDao().getStoriesByTopic(topicId)
+            }
+            if (stories.isNotEmpty()) {
+                questionList = stories.shuffled().take(10)
+                displayQuestion()
+            } else {
+                Toast.makeText(this@StoryQuizActivity, "Chủ đề này chưa có dữ liệu", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        }
+    }
+
+    private fun displayQuestion() {
+        isAnswered = false
+        actionButton.text = "Kiểm tra"
+        explanationLayout.visibility = View.GONE
+        tvProgress.text = "Câu: ${currentIndex + 1}/${questionList.size}"
+
+        radios.forEach { it.isChecked = false }
+        cards.forEach {
+            it.setStrokeColor("#E0E0E0".toColorInt())
+            it.setCardBackgroundColor(Color.WHITE)
+        }
+
+        val currentStory = questionList[currentIndex]
+        articleTextView.text = currentStory.storyContent
+        questionTextView.text = currentStory.question
+        radios[0].text = "A. ${currentStory.optionA}"
+        radios[1].text = "B. ${currentStory.optionB}"
+        radios[2].text = "C. ${currentStory.optionC}"
+        radios[3].text = "D. ${currentStory.optionD}"
+    }
+
+    private fun updateCardSelection(selectedIndex: Int) {
+        cards.forEachIndexed { index, card ->
+            if (index == selectedIndex) {
+                card.setStrokeColor("#6200EE".toColorInt())
+                card.setCardBackgroundColor("#F3E5F5".toColorInt())
+            } else {
+                card.setStrokeColor("#E0E0E0".toColorInt())
+                card.setCardBackgroundColor(Color.WHITE)
+            }
+        }
+    }
+
+    private fun checkAnswer() {
+        val selectedIndex = radios.indexOfFirst { it.isChecked }
+        if (selectedIndex == -1) {
+            Toast.makeText(this, "Vui lòng chọn 1 đáp án!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        isAnswered = true
+        actionButton.text = "Tiếp tục"
+        explanationLayout.visibility = View.VISIBLE
+
+        val currentStory = questionList[currentIndex]
+
+        val selectedLetter = arrayOf("A", "B", "C", "D")[selectedIndex]
+
+        val selectedContent = when (selectedIndex) {
+            0 -> currentStory.optionA
+            1 -> currentStory.optionB
+            2 -> currentStory.optionC
+            3 -> currentStory.optionD
+            else -> ""
+        }?.trim()
+
+        val dbCorrectAnswer = currentStory.correctAnswer?.trim()
+
+        val isCorrect = selectedLetter.equals(dbCorrectAnswer, ignoreCase = true) ||
+                selectedContent.equals(dbCorrectAnswer, ignoreCase = true)
+
+        if (isCorrect) {
+            score++
+            tvResultStatus.text = "CHÍNH XÁC! 🎉"
+            tvResultStatus.setTextColor(Color.parseColor("#2ECC71"))
+            cards[selectedIndex].setCardBackgroundColor(Color.parseColor("#D5F5E3"))
+            cards[selectedIndex].setStrokeColor(Color.parseColor("#2ECC71"))
+        } else {
+            tvResultStatus.text = "SAI RỒI! ❌"
+            tvResultStatus.setTextColor(Color.parseColor("#E74C3C"))
+            cards[selectedIndex].setCardBackgroundColor(Color.parseColor("#FADBD8"))
+            cards[selectedIndex].setStrokeColor(Color.parseColor("#E74C3C"))
+
+            val correctIndex = when {
+                "A".equals(dbCorrectAnswer, ignoreCase = true) || currentStory.optionA?.trim().equals(dbCorrectAnswer, ignoreCase = true) -> 0
+                "B".equals(dbCorrectAnswer, ignoreCase = true) || currentStory.optionB?.trim().equals(dbCorrectAnswer, ignoreCase = true) -> 1
+                "C".equals(dbCorrectAnswer, ignoreCase = true) || currentStory.optionC?.trim().equals(dbCorrectAnswer, ignoreCase = true) -> 2
+                "D".equals(dbCorrectAnswer, ignoreCase = true) || currentStory.optionD?.trim().equals(dbCorrectAnswer, ignoreCase = true) -> 3
+                else -> -1
+            }
+
+            if (correctIndex != -1) {
+                cards[correctIndex].setStrokeColor(Color.parseColor("#2ECC71"))
+            }
+        }
+
+        tvExplanation.text = "Giải thích: ${currentStory.explanationVi ?: "Không có giải thích"}"
+    }
+
+    private fun nextQuestion() {
+        currentIndex++
+        if (currentIndex < questionList.size) {
+            displayQuestion()
+        } else {
+            val intent = Intent(this, StoryResultActivity::class.java).apply {
+                putExtra("SCORE", score)
+                putExtra("TOTAL", questionList.size)
+                putExtra("TOPIC_ID", intent.getIntExtra("TOPIC_ID", -1))
+            }
+            startActivity(intent)
+            finish()
+        }
+    }
+}

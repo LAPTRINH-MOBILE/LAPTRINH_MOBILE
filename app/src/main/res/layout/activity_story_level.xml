@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chọn Cấp Độ Phù Hợp Với Bạn"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnA1"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Cấp độ A1 - Người mới bắt đầu (Beginner)"
+        android:layout_marginBottom="16dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnA2"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Cấp độ A2 - Sơ cấp (Elementary)"
+        android:layout_marginBottom="16dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnB1"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Cấp độ B1 - Trung cấp (Intermediate)"
+        android:layout_marginBottom="16dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnB2"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Cấp độ B2 - Trung cao cấp (Upper-Intermediate)"/>
+
+</LinearLayout>
