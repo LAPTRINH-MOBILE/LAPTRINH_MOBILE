@@ -32,7 +32,7 @@ class GrammarViewModel(application: Application) : AndroidViewModel(application)
     private val _currentExercise = MutableLiveData<GrammarExercise?>()
     val currentExercise: LiveData<GrammarExercise?> = _currentExercise
 
-    private val _progressText = MutableLiveData("Câu: 0/0")
+    private val _progressText = MutableLiveData("Câu 0/0")
     val progressText: LiveData<String> = _progressText
 
     private val _progressPercent = MutableLiveData(0)
@@ -103,9 +103,9 @@ class GrammarViewModel(application: Application) : AndroidViewModel(application)
         val total = exercises.size
         _currentExercise.value = exercises.getOrNull(currentIndex)
         _progressText.value = if (total > 0) {
-            "Câu: ${currentIndex + 1}/$total"
+            "Câu ${currentIndex + 1}/$total"
         } else {
-            "Câu: 0/0"
+            "Câu 0/0"
         }
 
         _progressPercent.value = if (total > 0) {

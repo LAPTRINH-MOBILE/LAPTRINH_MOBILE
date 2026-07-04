@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.app_wordpulse.MainActivity
@@ -31,9 +32,10 @@ class GrammarResultActivity : AppCompatActivity() {
         }
 
         findViewById<TextView>(R.id.tvScorePercent).text = "$scorePercent%"
-        findViewById<TextView>(R.id.tvTotalCount).text = "Tổng số câu: $totalCount"
-        findViewById<TextView>(R.id.tvCorrectCount).text = "Đúng: $correctCount"
-        findViewById<TextView>(R.id.tvWrongCount).text = "Sai: $wrongCount"
+        findViewById<ProgressBar>(R.id.scoreProgressBar).progress = scorePercent
+        findViewById<TextView>(R.id.tvTotalValue).text = totalCount.toString()
+        findViewById<TextView>(R.id.tvCorrectValue).text = correctCount.toString()
+        findViewById<TextView>(R.id.tvWrongValue).text = wrongCount.toString()
 
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
             finish()
