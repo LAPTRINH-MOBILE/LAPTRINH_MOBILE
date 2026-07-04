@@ -3,6 +3,7 @@ package com.example.app_wordpulse
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.app_wordpulse.auth.AuthRepository
 import com.example.app_wordpulse.auth.LoginActivity
@@ -52,7 +53,7 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<androidx.cardview.widget.CardView>(R.id.btnGrammar).setOnClickListener {
             android.util.Log.d("MainActivity", "Grammar clicked")
-            startActivity(Intent(this, GrammarActivity::class.java))
+            showGrammarLevelDialog()
         }
 
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
@@ -79,6 +80,21 @@ class MainActivity : AppCompatActivity() {
     private fun logout() {
         authRepository.logout()
         navigateToLogin()
+    }
+
+    private fun showGrammarLevelDialog() {
+        val levels = arrayOf("A1", "A2", "B1", "B2")
+        AlertDialog.Builder(this)
+            .setTitle("Chọn cấp độ")
+            .setItems(levels) { _, which ->
+                startActivity(
+                    Intent(this, GrammarActivity::class.java).apply {
+                        putExtra(GrammarActivity.EXTRA_LEVEL, levels[which])
+                    }
+                )
+            }
+            .setNegativeButton("Hủy", null)
+            .show()
     }
 
     private fun navigateToLogin() {
