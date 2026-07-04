@@ -10,6 +10,7 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -28,15 +29,16 @@ import com.example.app_wordpulse.data.model.GrammarExercise
 import com.google.android.material.card.MaterialCardView
 import java.util.Locale
 
-class GrammarActivity : AppCompatActivity() {
+class GrammarActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private val viewModel: GrammarViewModel by viewModels()
 
     private var currentExercise: GrammarExercise? = null
     private var selectedTopicId = NO_TOPIC_ID
     private var selectedLevel: String? = null
     private var hasNavigatedToResult = false
-    private var textToSpeech: TextToSpeech? = null
-    private var isTextToSpeechReady = false
+    private lateinit var tts: TextToSpeech
+    private var isTtsReady = false
+    private var isTtsAvailable = true
 
     private lateinit var backButton: ImageButton
     private lateinit var speakerButton: ImageButton
@@ -193,6 +195,7 @@ class GrammarActivity : AppCompatActivity() {
         nextButton.visibility = View.GONE
         nextButton.text = if (viewModel.isLastExercise) "Xem kết quả" else "Câu tiếp theo"
         hideFeedback()
+        updateSpeakerButtonState()
         setInputBorderColor(R.color.sky_blue)
     }
 
@@ -210,6 +213,9 @@ class GrammarActivity : AppCompatActivity() {
         feedbackTitleTextView.setTextColor(statusColor)
         correctAnswerTextView.text = "Đáp án đúng: ${exercise.correctAnswer}"
         explanationTextView.text = exercise.explanationVi
+        translationEditText.clearFocus()
+        translationEditText.isEnabled = false
+        updateSpeakerButtonState()
         setInputBorderColor(if (isCorrect) R.color.vista_blue else R.color.error)
     }
 
@@ -217,6 +223,7 @@ class GrammarActivity : AppCompatActivity() {
         feedbackCard.visibility = View.GONE
         explanationCard.visibility = View.GONE
         hintCard.visibility = if (currentExercise == null) View.GONE else View.VISIBLE
+        updateSpeakerButtonState()
         setInputBorderColor(R.color.sky_blue)
     }
 
@@ -228,6 +235,7 @@ class GrammarActivity : AppCompatActivity() {
         hintCard.visibility = View.GONE
         feedbackCard.visibility = View.GONE
         explanationCard.visibility = View.GONE
+        updateSpeakerButtonState()
     }
 
     private fun disableExerciseInput() {
@@ -236,6 +244,7 @@ class GrammarActivity : AppCompatActivity() {
         checkButton.visibility = View.GONE
         nextButton.isEnabled = false
         nextButton.visibility = View.GONE
+        updateSpeakerButtonState()
     }
 
     private fun openResultScreen() {
@@ -272,12 +281,41 @@ class GrammarActivity : AppCompatActivity() {
     }
 
     private fun setupTextToSpeech() {
-        textToSpeech = TextToSpeech(this) { status ->
-            isTextToSpeechReady = status == TextToSpeech.SUCCESS
-            if (isTextToSpeechReady) {
-                textToSpeech?.language = Locale.US
-            }
+        speakerButton.isEnabled = false
+        speakerButton.alpha = SPEAKER_DISABLED_ALPHA
+        tts = TextToSpeech(this, this)
+    }
+
+    override fun onInit(status: Int) {
+        if (status != TextToSpeech.SUCCESS) {
+            Log.e(TAG, "TextToSpeech init failed with status=$status")
+            isTtsReady = false
+            isTtsAvailable = false
+            updateSpeakerButtonState()
+            Toast.makeText(this, "Không thể khởi tạo giọng đọc trên thiết bị này.", Toast.LENGTH_SHORT).show()
+            return
         }
+
+        val languageResult = tts.setLanguage(Locale.US)
+        if (
+            languageResult == TextToSpeech.LANG_MISSING_DATA ||
+            languageResult == TextToSpeech.LANG_NOT_SUPPORTED
+        ) {
+            Log.e(TAG, "English TextToSpeech language is missing or not supported: $languageResult")
+            isTtsReady = false
+            isTtsAvailable = false
+            updateSpeakerButtonState()
+            Toast.makeText(
+                this,
+                "Thiết bị chưa hỗ trợ giọng đọc tiếng Anh, vui lòng cài thêm gói TTS trong Settings.",
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
+
+        isTtsReady = true
+        isTtsAvailable = true
+        updateSpeakerButtonState()
     }
 
     private fun speakAnswerAfterCheck() {
@@ -287,12 +325,32 @@ class GrammarActivity : AppCompatActivity() {
             return
         }
 
-        if (!isTextToSpeechReady || answer.isBlank()) {
-            Toast.makeText(this, "Chưa sẵn sàng phát âm.", Toast.LENGTH_SHORT).show()
+        if (!isTtsAvailable) {
+            Toast.makeText(this, "Thiết bị chưa hỗ trợ giọng đọc tiếng Anh.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        textToSpeech?.speak(answer, TextToSpeech.QUEUE_FLUSH, null, "grammar-answer")
+        if (!isTtsReady) {
+            Toast.makeText(this, "Đang khởi tạo giọng đọc, thử lại sau.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (answer.isBlank()) {
+            Toast.makeText(this, "Chưa có câu tiếng Anh để phát âm.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val speakResult = tts.speak(answer, TextToSpeech.QUEUE_FLUSH, null, "grammar-answer")
+        if (speakResult == TextToSpeech.ERROR) {
+            Toast.makeText(this, "Không thể phát âm lúc này.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun updateSpeakerButtonState() {
+        val hasCheckedAnswer = ::feedbackCard.isInitialized && feedbackCard.visibility == View.VISIBLE
+        val shouldEnable = isTtsAvailable && hasCheckedAnswer
+        speakerButton.isEnabled = shouldEnable
+        speakerButton.alpha = if (shouldEnable && isTtsReady) 1f else SPEAKER_DISABLED_ALPHA
     }
 
     private fun updateScoreText(score: String) {
@@ -339,8 +397,10 @@ class GrammarActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        textToSpeech?.stop()
-        textToSpeech?.shutdown()
+        if (::tts.isInitialized) {
+            tts.stop()
+            tts.shutdown()
+        }
         super.onDestroy()
     }
 
@@ -350,5 +410,7 @@ class GrammarActivity : AppCompatActivity() {
         private const val EXTRA_TOPIC_ID_UPPERCASE = "TOPIC_ID"
         private const val NO_TOPIC_ID = -1
         private const val MAX_ANSWER_LENGTH = 60
+        private const val SPEAKER_DISABLED_ALPHA = 0.45f
+        private const val TAG = "GrammarActivity"
     }
 }

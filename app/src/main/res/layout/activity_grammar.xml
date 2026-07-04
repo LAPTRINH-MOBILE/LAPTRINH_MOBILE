@@ -123,8 +123,8 @@
     <FrameLayout
         android:id="@+id/answerBox"
         android:layout_width="0dp"
-        android:layout_height="138dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="96dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/questionCard">
@@ -139,8 +139,10 @@
             android:imeOptions="actionDone"
             android:inputType="textCapSentences|textMultiLine"
             android:maxLength="60"
-            android:padding="14dp"
-            android:paddingBottom="30dp"
+            android:maxLines="2"
+            android:minLines="2"
+            android:padding="12dp"
+            android:paddingBottom="24dp"
             android:textColor="@color/text_primary"
             android:textColorHint="#9AA7C7"
             android:textSize="16sp" />
@@ -150,8 +152,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
-            android:layout_marginEnd="14dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="8dp"
             android:text="0/60"
             android:textColor="@color/text_muted"
             android:textSize="12sp" />
@@ -161,8 +163,8 @@
         android:id="@+id/resultScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="14dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="12dp"
         android:fillViewport="false"
         android:overScrollMode="never"
         app:layout_constraintBottom_toTopOf="@id/actionButtonContainer"
@@ -187,7 +189,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="12dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -235,7 +237,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="16dp">
+                    android:padding="12dp">
 
                     <ImageView
                         android:id="@+id/feedbackIcon"
@@ -265,7 +267,7 @@
                             android:id="@+id/tvCorrectAnswer"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
+                            android:layout_marginTop="4dp"
                             android:lineSpacingExtra="3dp"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp" />
@@ -277,7 +279,7 @@
                 android:id="@+id/explanationCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="10dp"
                 android:visibility="gone"
                 app:cardBackgroundColor="#EEF7FF"
                 app:cardCornerRadius="8dp"
@@ -287,7 +289,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="12dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -304,7 +306,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
+                            android:layout_marginStart="8dp"
                             android:text="Giải thích:"
                             android:textColor="@color/text_primary"
                             android:textSize="15sp"
@@ -315,7 +317,7 @@
                         android:id="@+id/tvExplanation"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="6dp"
                         android:lineSpacingExtra="4dp"
                         android:textColor="@color/text_primary"
                         android:textSize="15sp" />
