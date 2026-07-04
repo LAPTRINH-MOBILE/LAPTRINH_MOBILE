@@ -1,17 +1,20 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
     namespace = "com.example.app_wordpulse"
-    compileSdk = 37
+    compileSdk {
+        version = release(36) {
+            minorApiLevel = 1
+        }
+    }
 
     defaultConfig {
         applicationId = "com.example.app_wordpulse"
         minSdk = 24
-        targetSdk = 37
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -23,7 +26,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
+                "proguard-rules.pro"
             )
         }
     }
@@ -36,23 +39,7 @@ android {
     }
 }
 
-ksp {
-    arg("room.generateKotlin", "true")
-}
-
 dependencies {
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.fragment.ktx)
-    implementation(libs.androidx.recyclerview)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
-    implementation("com.google.android.material:material:1.12.0")
-    implementation("androidx.coordinatorlayout:coordinatorlayout:1.3.0")
-
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
-
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)

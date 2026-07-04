@@ -1,47 +1,85 @@
 package com.example.app_wordpulse
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.app_wordpulse.ui.theme.APP_WordPulseTheme
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.example.app_wordpulse.auth.AuthRepository
+import com.example.app_wordpulse.auth.LoginActivity
+import com.example.app_wordpulse.features.exercise.LessonListActivity
+import com.example.app_wordpulse.features.grammar.GrammarActivity
+import com.example.app_wordpulse.features.story.StoryListActivity
+import com.example.app_wordpulse.features.vocabulary.VocabTopicActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+    private lateinit var authRepository: AuthRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            APP_WordPulseTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+        
+        authRepository = AuthRepository(this)
+        val currentUser = authRepository.getCurrentUser()
+        
+        if (currentUser == null) {
+            navigateToLogin()
+            return
+        }
+
+        setContentView(R.layout.activity_main)
+
+        findViewById<TextView>(R.id.tvHello).text = "Welcome, ${currentUser.username}!"
+
+        setupListeners()
+    }
+
+    private fun setupListeners() {
+        findViewById<androidx.cardview.widget.CardView>(R.id.btnListening).setOnClickListener {
+            startActivity(Intent(this, LessonListActivity::class.java))
+        }
+
+        findViewById<androidx.cardview.widget.CardView>(R.id.btnVocab).setOnClickListener {
+            startActivity(Intent(this, VocabTopicActivity::class.java))
+        }
+
+        findViewById<androidx.cardview.widget.CardView>(R.id.btnStories).setOnClickListener {
+            startActivity(Intent(this, StoryListActivity::class.java))
+        }
+
+        findViewById<androidx.cardview.widget.CardView>(R.id.btnGrammar).setOnClickListener {
+            startActivity(Intent(this, GrammarActivity::class.java))
+        }
+
+        val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+        bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> true
+                R.id.nav_topics -> {
+                    startActivity(Intent(this, VocabTopicActivity::class.java))
+                    true
                 }
+                R.id.nav_stories -> {
+                    startActivity(Intent(this, StoryListActivity::class.java))
+                    true
+                }
+                R.id.nav_profile -> {
+                    logout()
+                    true
+                }
+                else -> false
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    private fun logout() {
+        authRepository.logout()
+        navigateToLogin()
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    APP_WordPulseTheme {
-        Greeting("Android")
+    private fun navigateToLogin() {
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }
