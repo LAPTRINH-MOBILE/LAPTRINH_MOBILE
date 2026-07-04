@@ -1,6 +1,7 @@
 package com.example.app_wordpulse.features.story
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -8,7 +9,9 @@ import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.toColorInt
 import androidx.core.view.ViewCompat
@@ -20,6 +23,7 @@ import com.example.app_wordpulse.data.model.Story
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -55,7 +59,14 @@ class StoryQuizActivity : AppCompatActivity() {
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        toolbar.setNavigationOnClickListener { showExitDialog() }
+
+        // Xử lý nút back hệ thống
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showExitDialog()
+            }
+        })
 
         initViews()
 
@@ -139,6 +150,7 @@ class StoryQuizActivity : AppCompatActivity() {
         }
 
         val currentStory = questionList[currentIndex]
+
         articleTextView.text = currentStory.storyContent
         questionTextView.text = currentStory.question
         radios[0].text = "A. ${currentStory.optionA}"
@@ -150,11 +162,15 @@ class StoryQuizActivity : AppCompatActivity() {
     private fun updateCardSelection(selectedIndex: Int) {
         cards.forEachIndexed { index, card ->
             if (index == selectedIndex) {
-                card.setStrokeColor("#6200EE".toColorInt())
-                card.setCardBackgroundColor("#F3E5F5".toColorInt())
+                card.setStrokeColor("#79B8F4".toColorInt())
+                card.setCardBackgroundColor("#E3F2FD".toColorInt())
+                // Cập nhật màu chấm tròn của RadioButton sang xanh
+                radios[index].buttonTintList = ColorStateList.valueOf("#79B8F4".toColorInt())
             } else {
                 card.setStrokeColor("#E0E0E0".toColorInt())
                 card.setCardBackgroundColor(Color.WHITE)
+                // Reset màu chấm tròn về mặc định (hoặc giữ màu xanh)
+                radios[index].buttonTintList = ColorStateList.valueOf("#79B8F4".toColorInt())
             }
         }
     }
@@ -228,5 +244,30 @@ class StoryQuizActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+    }
+
+    private fun showExitDialog() {
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setTitle("Xác nhận thoát")
+            .setMessage("Nếu quay lại, tiến độ bài thi hiện tại của bạn sẽ không được lưu. Bạn vẫn muốn thoát chứ?")
+            .setIcon(R.drawable.ic_reminder)
+            .setPositiveButton("Đồng ý") { d, _ ->
+                finish()
+            }
+            .setNegativeButton("Hủy") { d, _ ->
+                d.dismiss()
+            }
+            .setNeutralButton("Để sau") { d, _ ->
+                d.dismiss()
+            }
+            .setCancelable(false)
+            .create()
+
+        dialog.show()
+
+        val mainColor = Color.parseColor("#79B8F4")
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(mainColor)
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(mainColor)
+        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(mainColor)
     }
 }

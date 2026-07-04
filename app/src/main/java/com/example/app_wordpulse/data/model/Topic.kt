@@ -13,5 +13,8 @@ data class Topic(
     val level: String? = null,
 
     @ColumnInfo(name = "topic_name")
-    val topicName: String? = null
+    val topicName: String? = null,
+
+    @ColumnInfo(name = "image_data", typeAffinity = ColumnInfo.BLOB)
+    val imageData: ByteArray? = null
 )

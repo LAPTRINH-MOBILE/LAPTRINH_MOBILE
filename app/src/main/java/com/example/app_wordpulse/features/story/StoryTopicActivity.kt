@@ -2,6 +2,7 @@ package com.example.app_wordpulse.features.story
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -35,7 +36,8 @@ class StoryTopicActivity : AppCompatActivity() {
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "Chủ đề - $level"
+        supportActionBar?.setDisplayShowTitleEnabled(false) // Tắt title mặc định để hiện TextView ở giữa
+        findViewById<TextView>(R.id.toolbar_title).text = "Chủ đề - $level"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
 

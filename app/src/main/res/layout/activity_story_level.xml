@@ -1,46 +1,239 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center">
+    android:fillViewport="true"
+    android:background="#F5F5F5">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Chọn Cấp Độ Phù Hợp Với Bạn"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="32dp"/>
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnA1"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Cấp độ A1 - Người mới bắt đầu (Beginner)"
-        android:layout_marginBottom="16dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chọn Cấp Độ Phù Hợp"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#1D1B20"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="32dp"
+            android:gravity="center"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnA2"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Cấp độ A2 - Sơ cấp (Elementary)"
-        android:layout_marginBottom="16dp"/>
+        <!-- Hàng 1: A1 và A2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:baselineAligned="false"
+            android:weightSum="2">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnB1"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Cấp độ B1 - Trung cấp (Intermediate)"
-        android:layout_marginBottom="16dp"/>
+            <!-- A1 Container -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+                <LinearLayout
+                    android:id="@+id/btnA1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="#E3F2FD">
+                    <ImageView
+                        android:id="@+id/imgA1"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/a1"
+                        android:scaleType="fitCenter"
+                        android:contentDescription="A1 Level"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cấp độ A1"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="#1565C0"
+                        android:gravity="center"
+                        android:layout_marginTop="12dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bắt đầu"
+                        android:textSize="14sp"
+                        android:textColor="#1976D2"
+                        android:gravity="center"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnB2"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Cấp độ B2 - Trung cao cấp (Upper-Intermediate)"/>
+            <!-- A2 Container -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+                <LinearLayout
+                    android:id="@+id/btnA2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="#E8F5E9">
+                    <ImageView
+                        android:id="@+id/imgA2"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/a2"
+                        android:scaleType="fitCenter"
+                        android:contentDescription="A2 Level"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cấp độ A2"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="#2E7D32"
+                        android:gravity="center"
+                        android:layout_marginTop="12dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sơ cấp"
+                        android:textSize="14sp"
+                        android:textColor="#388E3C"
+                        android:gravity="center"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
 
-</LinearLayout>
+        <!-- Hàng 2: B1 và B2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:baselineAligned="false"
+            android:weightSum="2"
+            android:layout_marginTop="8dp">
+
+            <!-- B1 Container -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+                <LinearLayout
+                    android:id="@+id/btnB1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="#FFF3E0">
+                    <ImageView
+                        android:id="@+id/imgB1"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/b1"
+                        android:scaleType="fitCenter"
+                        android:contentDescription="B1 Level"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cấp độ B1"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="#EF6C00"
+                        android:gravity="center"
+                        android:layout_marginTop="12dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Trung cấp"
+                        android:textSize="14sp"
+                        android:textColor="#F57C00"
+                        android:gravity="center"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- B2 Container -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+                <LinearLayout
+                    android:id="@+id/btnB2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="#F3E5F5">
+                    <ImageView
+                        android:id="@+id/imgB2"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/b2"
+                        android:scaleType="fitCenter"
+                        android:contentDescription="B2 Level"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Cấp độ B2"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="#7B1FA2"
+                        android:gravity="center"
+                        android:layout_marginTop="12dp"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nâng cao"
+                        android:textSize="14sp"
+                        android:textColor="#8E24AA"
+                        android:gravity="center"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBackHome"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Quay về Trang chủ"
+            android:textColor="#6750A4"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:strokeColor="#6750A4"
+            app:strokeWidth="2dp"
+            app:cornerRadius="12dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="24dp"/>
+
+    </LinearLayout>
+</ScrollView>
