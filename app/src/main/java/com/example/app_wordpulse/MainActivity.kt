@@ -35,18 +35,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         findViewById<androidx.cardview.widget.CardView>(R.id.btnListening).setOnClickListener {
+            android.util.Log.d("MainActivity", "Listening clicked")
             startActivity(Intent(this, LessonListActivity::class.java))
         }
 
         findViewById<androidx.cardview.widget.CardView>(R.id.btnVocab).setOnClickListener {
-            startActivity(Intent(this, VocabTopicActivity::class.java))
+            android.util.Log.d("MainActivity", "Vocab clicked")
+            val intent = Intent(this, VocabTopicActivity::class.java)
+            startActivity(intent)
         }
 
         findViewById<androidx.cardview.widget.CardView>(R.id.btnStories).setOnClickListener {
+            android.util.Log.d("MainActivity", "Stories clicked")
             startActivity(Intent(this, StoryLevelActivity::class.java))
         }
 
         findViewById<androidx.cardview.widget.CardView>(R.id.btnGrammar).setOnClickListener {
+            android.util.Log.d("MainActivity", "Grammar clicked")
             startActivity(Intent(this, GrammarActivity::class.java))
         }
 
