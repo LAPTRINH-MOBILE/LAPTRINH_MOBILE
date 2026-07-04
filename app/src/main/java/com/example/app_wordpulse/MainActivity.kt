@@ -8,7 +8,7 @@ import com.example.app_wordpulse.auth.AuthRepository
 import com.example.app_wordpulse.auth.LoginActivity
 import com.example.app_wordpulse.features.exercise.LessonListActivity
 import com.example.app_wordpulse.features.grammar.GrammarActivity
-import com.example.app_wordpulse.features.story.StoryListActivity
+import com.example.app_wordpulse.features.story.StoryLevelActivity
 import com.example.app_wordpulse.features.vocabulary.VocabTopicActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<androidx.cardview.widget.CardView>(R.id.btnStories).setOnClickListener {
-            startActivity(Intent(this, StoryListActivity::class.java))
+            startActivity(Intent(this, StoryLevelActivity::class.java))
         }
 
         findViewById<androidx.cardview.widget.CardView>(R.id.btnGrammar).setOnClickListener {
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_stories -> {
-                    startActivity(Intent(this, StoryListActivity::class.java))
+                    startActivity(Intent(this, StoryLevelActivity::class.java))
                     true
                 }
                 R.id.nav_profile -> {
