@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">APP_WordPulse</string>
+    <string name="app_name">WordPulse</string>
     <string name="login">Login</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
