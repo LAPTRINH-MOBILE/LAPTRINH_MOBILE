@@ -7,6 +7,15 @@
 
     <color name="primary">#72DDF7</color>
     <color name="background">#EFEFEF</color>
+    <color name="headerGradientStart">#42A5F5</color>
+    <color name="headerGradientEnd">#1976D2</color>
+    <color name="primaryColor">#2196F3</color>
+    <color name="primaryColorDark">#1976D2</color>
+    <color name="backgroundColor">#F5F5F5</color>
+    <color name="cardVocabColor">#FF9800</color>
+    <color name="cardListeningColor">#2196F3</color>
+    <color name="cardStoryColor">#4CAF50</color>
+    <color name="cardGrammarColor">#E91E63</color>
     <color name="error">#E53935</color>
     <color name="text_primary">#1A1A2E</color>
     <color name="text_muted">#6B7280</color>
