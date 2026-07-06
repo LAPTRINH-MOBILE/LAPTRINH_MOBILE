@@ -8,12 +8,14 @@ import androidx.room.PrimaryKey
 data class Word(
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
-    val term: String,
-    val pronunciation: String,
+    val term: String? = null,
+    val pronunciation: String? = null,
     @ColumnInfo(name = "word_type")
-    val wordType: String,
-    val definition: String,
+    val wordType: String? = null,
+    val definition: String? = null,
     @ColumnInfo(name = "topic")
-    val topicName: String,
-    val level: String
+    val topicName: String? = null,
+    val level: String? = null,
+    @ColumnInfo(name = "image_url")
+    val imageUrl: String? = null
 )

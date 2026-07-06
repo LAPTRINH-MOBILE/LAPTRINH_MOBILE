@@ -17,6 +17,9 @@ interface WordDao {
     @Query("SELECT DISTINCT level FROM Words WHERE level IS NOT NULL AND TRIM(level) != '' ORDER BY level")
     fun getAllLevels(): Flow<List<String>>
 
+    @Query("SELECT DISTINCT topic FROM Words WHERE level = :level AND topic IS NOT NULL AND TRIM(topic) != '' ORDER BY topic")
+    fun getTopicsByLevel(level: String): Flow<List<String>>
+
     @Query("SELECT * FROM Words WHERE topic = :topic ORDER BY id")
     fun getWordsByTopic(topic: String): Flow<List<Word>>
 

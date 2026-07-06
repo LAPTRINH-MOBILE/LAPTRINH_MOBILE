@@ -1,7 +1,11 @@
 package com.example.app_wordpulse.features.vocabulary
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -19,16 +23,24 @@ import kotlinx.coroutines.launch
 
 class FlashcardActivity : AppCompatActivity() {
 
+    private companion object {
+        const val FLIP_HALF_DURATION = 140L
+        const val CARD_CAMERA_DISTANCE = 12000f
+    }
+
     private val viewModel: VocabViewModel by viewModels()
     private var currentWordIndex = 0
     private var wordsList = listOf<Word>()
     private var isShowingDefinition = false
+    private var isFlipAnimating = false
 
     private lateinit var tvCardContent: TextView
     private lateinit var tvProgress: TextView
     private lateinit var tvLevel: TextView
     private lateinit var ivIllustration: ImageView
     private lateinit var cvFlashcard: CardView
+    private lateinit var btnNext: Button
+    private lateinit var btnPrevious: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,9 +52,10 @@ class FlashcardActivity : AppCompatActivity() {
             tvLevel = findViewById(R.id.tvLevel)
             ivIllustration = findViewById(R.id.ivIllustration)
             cvFlashcard = findViewById(R.id.cvFlashcard)
+            cvFlashcard.cameraDistance = CARD_CAMERA_DISTANCE * resources.displayMetrics.density
 
-            val btnPrevious: Button = findViewById(R.id.btnPrevious)
-            val btnNext: Button = findViewById(R.id.btnNext)
+            btnPrevious = findViewById(R.id.btnPrevious)
+            btnNext = findViewById(R.id.btnNext)
 
             val topicName = intent.getStringExtra("TOPIC_NAME") ?: ""
             supportActionBar?.title = topicName
@@ -68,14 +81,7 @@ class FlashcardActivity : AppCompatActivity() {
             }
 
             cvFlashcard.setOnClickListener {
-                val rotation = if (isShowingDefinition) 0f else 180f
-                cvFlashcard.animate().rotationY(rotation).setDuration(300).withEndAction {
-                    isShowingDefinition = !isShowingDefinition
-                    tvCardContent.rotationY = if (isShowingDefinition) 180f else 0f
-                    tvLevel.rotationY = if (isShowingDefinition) 180f else 0f
-                    ivIllustration.rotationY = if (isShowingDefinition) 180f else 0f
-                    updateCardDisplay()
-                }.start()
+                flipCard()
             }
 
             btnNext.setOnClickListener {
@@ -83,6 +89,9 @@ class FlashcardActivity : AppCompatActivity() {
                     currentWordIndex++
                     resetCardState()
                     showWord(currentWordIndex)
+                } else {
+                    // When on the last card and clicking "Hoàn thành"
+                    finish()
                 }
             }
 
@@ -102,6 +111,10 @@ class FlashcardActivity : AppCompatActivity() {
     }
 
     private fun resetCardState() {
+        cvFlashcard.animate().cancel()
+        cvFlashcard.animate().setListener(null)
+        isFlipAnimating = false
+        cvFlashcard.isClickable = true
         isShowingDefinition = false
         cvFlashcard.rotationY = 0f
         tvCardContent.rotationY = 0f
@@ -114,6 +127,55 @@ class FlashcardActivity : AppCompatActivity() {
         updateCardDisplay()
     }
 
+    private fun flipCard() {
+        if (isFlipAnimating || wordsList.isEmpty()) return
+
+        isFlipAnimating = true
+        cvFlashcard.isClickable = false
+        cvFlashcard.animate()
+            .rotationY(90f)
+            .setDuration(FLIP_HALF_DURATION)
+            .setInterpolator(AccelerateInterpolator())
+            .withLayer()
+            .setListener(object : AnimatorListenerAdapter() {
+                private var cancelled = false
+
+                override fun onAnimationCancel(animation: Animator) {
+                    cancelled = true
+                }
+
+                override fun onAnimationEnd(animation: Animator) {
+                    cvFlashcard.animate().setListener(null)
+                    if (cancelled) {
+                        finishFlipAnimation()
+                        return
+                    }
+
+                    isShowingDefinition = !isShowingDefinition
+                    updateCardDisplay()
+                    cvFlashcard.rotationY = -90f
+                    cvFlashcard.animate()
+                        .rotationY(0f)
+                        .setDuration(FLIP_HALF_DURATION)
+                        .setInterpolator(DecelerateInterpolator())
+                        .withLayer()
+                        .setListener(object : AnimatorListenerAdapter() {
+                            override fun onAnimationEnd(animation: Animator) {
+                                cvFlashcard.animate().setListener(null)
+                                finishFlipAnimation()
+                            }
+                        })
+                        .start()
+                }
+            })
+            .start()
+    }
+
+    private fun finishFlipAnimation() {
+        isFlipAnimating = false
+        cvFlashcard.isClickable = true
+    }
+
     private fun updateCardDisplay() {
         if (wordsList.isEmpty()) {
             tvProgress.text = "0/0"
@@ -121,9 +183,27 @@ class FlashcardActivity : AppCompatActivity() {
         }
         val word = wordsList[currentWordIndex]
 
-        tvCardContent.text = if (isShowingDefinition) word.definition else word.term
+        tvCardContent.text = if (isShowingDefinition) word.definition ?: "" else word.term ?: ""
         tvProgress.text = "${currentWordIndex + 1}/${wordsList.size}"
-        tvLevel.text = "Cấp độ: ${word.level}"
-        ivIllustration.visibility = View.GONE
+        tvLevel.text = "Cấp độ: ${word.level ?: ""}"
+
+        // Update Next button text if it's the last card
+        if (currentWordIndex == wordsList.size - 1) {
+            btnNext.text = "Hoàn thành"
+        } else {
+            btnNext.text = "Tiếp theo"
+        }
+
+        if (!word.imageUrl.isNullOrEmpty()) {
+            val resId = resources.getIdentifier(word.imageUrl, "drawable", packageName)
+            if (resId != 0) {
+                ivIllustration.setImageResource(resId)
+                ivIllustration.visibility = View.VISIBLE
+            } else {
+                ivIllustration.visibility = View.GONE
+            }
+        } else {
+            ivIllustration.visibility = View.GONE
+        }
     }
 }

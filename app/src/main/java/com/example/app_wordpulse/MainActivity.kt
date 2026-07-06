@@ -35,29 +35,29 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        findViewById<TextView>(R.id.tvHello).text = "Welcome, ${currentUser.username}!"
+        findViewById<TextView>(R.id.tvHello).text = "Chào bạn, ${currentUser.username}!"
 
         setupListeners()
     }
 
     private fun setupListeners() {
-        findViewById<androidx.cardview.widget.CardView>(R.id.btnListening).setOnClickListener {
+        findViewById<View>(R.id.btnListening).setOnClickListener {
             android.util.Log.d("MainActivity", "Listening clicked")
             startActivity(Intent(this, LessonListActivity::class.java))
         }
 
-        findViewById<androidx.cardview.widget.CardView>(R.id.btnVocab).setOnClickListener {
+        findViewById<View>(R.id.btnVocab).setOnClickListener {
             android.util.Log.d("MainActivity", "Vocab clicked")
             val intent = Intent(this, VocabTopicActivity::class.java)
             startActivity(intent)
         }
 
-        findViewById<androidx.cardview.widget.CardView>(R.id.btnStories).setOnClickListener {
+        findViewById<View>(R.id.btnStories).setOnClickListener {
             android.util.Log.d("MainActivity", "Stories clicked")
             startActivity(Intent(this, StoryLevelActivity::class.java))
         }
 
-        findViewById<androidx.cardview.widget.CardView>(R.id.btnGrammar).setOnClickListener {
+        findViewById<View>(R.id.btnGrammar).setOnClickListener {
             android.util.Log.d("MainActivity", "Grammar clicked")
             showGrammarLevelDialog()
         }
@@ -66,16 +66,20 @@ class MainActivity : AppCompatActivity() {
         bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> true
-                R.id.nav_topics -> {
+                R.id.nav_vocab -> {
                     startActivity(Intent(this, VocabTopicActivity::class.java))
+                    true
+                }
+                R.id.nav_listening -> {
+                    startActivity(Intent(this, LessonListActivity::class.java))
                     true
                 }
                 R.id.nav_stories -> {
                     startActivity(Intent(this, StoryLevelActivity::class.java))
                     true
                 }
-                R.id.nav_profile -> {
-                    logout()
+                R.id.nav_grammar -> {
+                    showGrammarLevelDialog()
                     true
                 }
                 else -> false

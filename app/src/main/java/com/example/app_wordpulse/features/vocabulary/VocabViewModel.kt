@@ -25,21 +25,12 @@ class VocabViewModel(application: Application) : AndroidViewModel(application) {
     val words: StateFlow<List<Word>> = _words.asStateFlow()
 
     init {
-        loadTopics()
+        // loadTopics() - Removed to avoid loading all topics initially
         loadLevels()
     }
 
     private fun loadTopics() {
-        viewModelScope.launch {
-            try {
-                wordDao.getAllTopics().collectLatest { topics ->
-                    android.util.Log.d("VocabViewModel", "Loaded ${topics.size} topics from Words table")
-                    _topics.value = topics
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
+        // No longer used, but kept as empty or removed to ensure loadTopicsByLevel works
     }
 
     private fun loadLevels() {
@@ -71,6 +62,18 @@ class VocabViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 wordDao.getWordsByLevel(level).collectLatest { words ->
                     _words.value = words
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun loadTopicsByLevel(level: String) {
+        viewModelScope.launch {
+            try {
+                wordDao.getTopicsByLevel(level).collectLatest { topics ->
+                    _topics.value = topics
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
