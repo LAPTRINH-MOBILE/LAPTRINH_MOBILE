@@ -25,40 +25,46 @@ class DictationActivity : AppCompatActivity() {
     private lateinit var edtAnswer: EditText
     private lateinit var chipGroupHints: ChipGroup
     private lateinit var rvTranscriptList: RecyclerView
+    private lateinit var transcriptAdapter: TranscriptAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dictation)
 
-        // Ánh xạ View
         edtAnswer = findViewById(R.id.edtAnswer)
         chipGroupHints = findViewById(R.id.chipGroupHints)
         rvTranscriptList = findViewById(R.id.rvTranscriptList)
         val btnReplay = findViewById<Button>(R.id.btnReplaySegment)
         val btnNext = findViewById<Button>(R.id.btnNextSegment)
 
-        // Cấu hình Youtube Player
+        rvTranscriptList.layoutManager = LinearLayoutManager(this)
+        transcriptAdapter = TranscriptAdapter(emptyList()) { index ->
+            viewModel.setCurrentSentenceIndex(index)
+        }
+        rvTranscriptList.adapter = transcriptAdapter
+
         val youtubePlayerView = findViewById<YouTubePlayerView>(R.id.youtubePlayerView)
         lifecycle.addObserver(youtubePlayerView)
 
         youtubePlayerView.initialize(object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 mYouTubePlayer = youTubePlayer
-                viewModel.loadDummyData() // Kích hoạt nạp dữ liệu bài học
+                val lessonId = intent.getStringExtra("VIDEO_ID") ?: ""
+                if (lessonId.isNotEmpty()) {
+                    viewModel.loadLesson(lessonId)
+                }
                 observeViewModel()
             }
 
-            // LOGIC CỐT LÕI: Đồng bộ hóa thời gian thực
             override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
                 currentLine?.let {
                     if (second >= it.endTime) {
-                        youTubePlayer.pause() // Video chạy hết thời lượng câu -> Tự động dừng
+                        youTubePlayer.pause()
                     }
                 }
             }
         })
 
-        // Nút bấm phát lại phân đoạn câu hiện tại
         btnReplay.setOnClickListener {
             currentLine?.let { line ->
                 mYouTubePlayer?.seekTo(line.startTime)
@@ -66,7 +72,6 @@ class DictationActivity : AppCompatActivity() {
             }
         }
 
-        // Nút kiểm tra đáp án và chuyển sang câu tiếp theo
         btnNext.setOnClickListener {
             currentLine?.let { line ->
                 val userText = edtAnswer.text.toString()
@@ -82,26 +87,21 @@ class DictationActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
-        // Lắng nghe dữ liệu bài học để cấu hình danh sách RecyclerView phát nhạc
         viewModel.lessonData.observe(this) { lesson ->
             mYouTubePlayer?.cueVideo(lesson.videoId, 0f)
-
-            // Khởi tạo sơ bộ dữ liệu cho danh sách RecyclerView (Cần code thêm Adapter cụ thể sau)
-            rvTranscriptList.layoutManager = LinearLayoutManager(this)
+            transcriptAdapter.setData(lesson.transcripts)
         }
 
-        // Lắng nghe sự thay đổi câu hiện tại
         viewModel.currentSentenceIndex.observe(this) { index ->
             val lesson = viewModel.lessonData.value ?: return@observe
             if (index < lesson.transcripts.size) {
                 currentLine = lesson.transcripts[index]
+                transcriptAdapter.updateCurrentIndex(index)
+                rvTranscriptList.scrollToPosition(index)
 
-                // Ép video tự nhảy về giây bắt đầu phân đoạn câu mới
                 currentLine?.let { line ->
                     mYouTubePlayer?.seekTo(line.startTime)
                     mYouTubePlayer?.play()
-
-                    // Cập nhật vùng ChipGroup hiển thị các từ dạng ***
                     updateHintChips(line.text)
                 }
             }

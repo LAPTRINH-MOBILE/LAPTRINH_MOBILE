@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "990477485172",
+    "firebase_url": "https://app-anh-van-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "app-anh-van",
+    "storage_bucket": "app-anh-van.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:990477485172:android:fdead7d9371538ccd07d21",
+        "android_client_info": {
+          "package_name": "com.example.app_wordpulse"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxBhEe3A5jbdUXg24dUHk14jsTmus38L8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,18 +4,35 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.app_wordpulse.R
 
 class LessonListActivity : AppCompatActivity() {
+
+    private val viewModel: LessonListViewModel by viewModels()
+    private lateinit var categoryAdapter: CategoryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lesson_list)
 
-        // GIẢ LẬP: Khi người dùng bấm vào một Video trên danh sách RecyclerView
-        // Chỗ này trong Adapter bạn sẽ gọi hàm showModeSelectionDialog(videoId)
+        val rvLessons: RecyclerView = findViewById(R.id.rvLessons)
+        rvLessons.layoutManager = LinearLayoutManager(this)
+
+        categoryAdapter = CategoryAdapter(emptyList()) { lesson ->
+            showModeSelectionDialog(lesson.id.ifEmpty { lesson.videoId })
+        }
+        rvLessons.adapter = categoryAdapter
+
+        viewModel.categories.observe(this) { categories ->
+            categoryAdapter.updateData(categories)
+        }
+
+        viewModel.loadCategories()
     }
 
     private fun showModeSelectionDialog(videoId: String) {
@@ -27,7 +44,6 @@ class LessonListActivity : AppCompatActivity() {
         val btnDictation = dialogView.findViewById<LinearLayout>(R.id.layoutDictation)
         val btnShadowing = dialogView.findViewById<LinearLayout>(R.id.layoutShadowing)
 
-        // Nếu ấn chọn chế độ Nghe - Chép chính tả
         btnDictation.setOnClickListener {
             builder.dismiss()
             val intent = Intent(this, DictationActivity::class.java).apply {
@@ -36,10 +52,9 @@ class LessonListActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Nếu chọn chế độ Phát âm (Shadowing)
         btnShadowing.setOnClickListener {
             builder.dismiss()
-            // Chuyển hướng sang ShadowingActivity tương ứng của bạn
+            // Chuyển sang ShadowingActivity nếu có
         }
 
         builder.show()
