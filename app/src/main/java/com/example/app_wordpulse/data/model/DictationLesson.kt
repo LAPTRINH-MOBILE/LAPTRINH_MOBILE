@@ -1,31 +1,39 @@
 package com.example.app_wordpulse.data.model
 
+import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.database.PropertyName
+
+@IgnoreExtraProperties
 data class TranscriptLine(
-    val id: Int = 0,
-    val startTime: Float = 0f,
-    val endTime: Float = 0f,
-    val text: String = "",
-    val translation: String = ""
+    var id: Int = 0,
+    var startTime: Float = 0f,
+    var endTime: Float = 0f,
+    var text: String = "",
+    var translation: String = ""
 )
 
+@IgnoreExtraProperties
 data class DictationLesson(
-    val id: String = "",
-    val videoId: String = "",
-    val videoUrl: String = "",
-    val thumbnailUrl: String = "",
-    val title: String = "",
-    val level: String = "",
-    val duration: String = "",
-    val views: Int = 0,
-    val isPro: Boolean = false,
-    val dictationDone: Boolean = false,
-    val shadowingDone: Boolean = false,
-    val transcripts: List<TranscriptLine> = emptyList()
+    var id: String = "",
+    var videoId: String = "",
+    var videoUrl: String = "",
+    @get:PropertyName("imageUrl") @set:PropertyName("imageUrl") var imageUrl: String = "",
+    var thumbnailUrl: String = "",
+    var title: String = "",
+    var level: String = "",
+    var duration: String = "",
+    var views: Int = 0,
+    @get:PropertyName("isPro") @set:PropertyName("isPro") var isPro: Boolean = false,
+    @get:PropertyName("isCompleted") @set:PropertyName("isCompleted") var isCompleted: Boolean = false,
+    var dictationDone: Boolean = false,
+    var shadowingDone: Boolean = false,
+    var transcripts: List<TranscriptLine> = emptyList()
 )
 
+@IgnoreExtraProperties
 data class LessonCategory(
-    val id: String = "",
-    val name: String = "",
-    val lessonCount: Int = 0,
-    val lessons: List<DictationLesson> = emptyList()
+    var id: String = "",
+    var name: String = "",
+    var lessonCount: Int = 0,
+    var lessons: List<DictationLesson> = emptyList()
 )

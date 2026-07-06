@@ -6,15 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.app_wordpulse.data.model.DictationLesson
-import com.example.app_wordpulse.data.model.TranscriptLine
-import com.google.firebase.database.FirebaseDatabase
+import com.example.app_wordpulse.data.repository.DictationRepository
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 class DictationViewModel : ViewModel() {
 
-    private val database = FirebaseDatabase.getInstance("https://app-anh-van-default-rtdb.asia-southeast1.firebasedatabase.app")
-        .getReference("dictation_lessons")
+    private val repository = DictationRepository()
 
     private val _lessonData = MutableLiveData<DictationLesson>()
     val lessonData: LiveData<DictationLesson> = _lessonData
@@ -29,29 +26,17 @@ class DictationViewModel : ViewModel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val snapshot = database.child(lessonId).get().await()
-                val lesson = snapshot.getValue(DictationLesson::class.java)
+                val lesson = repository.getLessonById(lessonId)
                 if (lesson != null) {
-                    val finalLesson = lesson.copy(
-                        id = if (lesson.id.isEmpty()) snapshot.key ?: "" else lesson.id,
-                        videoId = if (lesson.videoId.isEmpty()) extractVideoId(lesson.videoUrl) else lesson.videoId
-                    )
-                    _lessonData.value = finalLesson
+                    _lessonData.value = lesson!!
+                } else {
+                    Log.e("DictationViewModel", "Lesson not found for ID: $lessonId")
                 }
             } catch (e: Exception) {
                 Log.e("DictationViewModel", "Error loading lesson", e)
             } finally {
                 _isLoading.value = false
             }
-        }
-    }
-
-    private fun extractVideoId(url: String): String {
-        // Đơn giản hóa việc lấy ID từ link youtube
-        return when {
-            url.contains("v=") -> url.substringAfter("v=").substringBefore("&")
-            url.contains("be/") -> url.substringAfter("be/")
-            else -> url
         }
     }
 

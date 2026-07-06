@@ -54,7 +54,7 @@ class DictationLessonAdapter(
         }
 
         // 2. Tải ảnh thumbnail (Chỉ lấy link trực tiếp từ database theo yêu cầu)
-        val finalThumbnailUrl = lesson.thumbnailUrl
+        val finalThumbnailUrl = lesson.thumbnailUrl.ifEmpty { lesson.imageUrl }
 
         // Cập nhật tag nguồn video (Ẩn tag YouTube, chỉ giữ Drive nếu cần)
         if (lesson.videoUrl.contains("drive.google.com")) {
