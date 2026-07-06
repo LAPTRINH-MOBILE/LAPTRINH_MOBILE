@@ -66,16 +66,20 @@ class MainActivity : AppCompatActivity() {
         bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> true
-                R.id.nav_learn -> {
+                R.id.nav_vocab -> {
                     startActivity(Intent(this, VocabTopicActivity::class.java))
                     true
                 }
-                R.id.nav_books -> {
+                R.id.nav_listening -> {
+                    startActivity(Intent(this, LessonListActivity::class.java))
+                    true
+                }
+                R.id.nav_stories -> {
                     startActivity(Intent(this, StoryLevelActivity::class.java))
                     true
                 }
-                R.id.nav_profile -> {
-                    logout()
+                R.id.nav_grammar -> {
+                    showGrammarLevelDialog()
                     true
                 }
                 else -> false

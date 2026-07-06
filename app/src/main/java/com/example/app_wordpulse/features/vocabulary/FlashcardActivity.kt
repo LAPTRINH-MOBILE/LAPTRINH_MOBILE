@@ -39,6 +39,8 @@ class FlashcardActivity : AppCompatActivity() {
     private lateinit var tvLevel: TextView
     private lateinit var ivIllustration: ImageView
     private lateinit var cvFlashcard: CardView
+    private lateinit var btnNext: Button
+    private lateinit var btnPrevious: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,8 +54,8 @@ class FlashcardActivity : AppCompatActivity() {
             cvFlashcard = findViewById(R.id.cvFlashcard)
             cvFlashcard.cameraDistance = CARD_CAMERA_DISTANCE * resources.displayMetrics.density
 
-            val btnPrevious: Button = findViewById(R.id.btnPrevious)
-            val btnNext: Button = findViewById(R.id.btnNext)
+            btnPrevious = findViewById(R.id.btnPrevious)
+            btnNext = findViewById(R.id.btnNext)
 
             val topicName = intent.getStringExtra("TOPIC_NAME") ?: ""
             supportActionBar?.title = topicName
@@ -87,6 +89,9 @@ class FlashcardActivity : AppCompatActivity() {
                     currentWordIndex++
                     resetCardState()
                     showWord(currentWordIndex)
+                } else {
+                    // When on the last card and clicking "Hoàn thành"
+                    finish()
                 }
             }
 
@@ -178,9 +183,27 @@ class FlashcardActivity : AppCompatActivity() {
         }
         val word = wordsList[currentWordIndex]
 
-        tvCardContent.text = if (isShowingDefinition) word.definition else word.term
+        tvCardContent.text = if (isShowingDefinition) word.definition ?: "" else word.term ?: ""
         tvProgress.text = "${currentWordIndex + 1}/${wordsList.size}"
-        tvLevel.text = "Cấp độ: ${word.level}"
-        ivIllustration.visibility = View.GONE
+        tvLevel.text = "Cấp độ: ${word.level ?: ""}"
+
+        // Update Next button text if it's the last card
+        if (currentWordIndex == wordsList.size - 1) {
+            btnNext.text = "Hoàn thành"
+        } else {
+            btnNext.text = "Tiếp theo"
+        }
+
+        if (!word.imageUrl.isNullOrEmpty()) {
+            val resId = resources.getIdentifier(word.imageUrl, "drawable", packageName)
+            if (resId != 0) {
+                ivIllustration.setImageResource(resId)
+                ivIllustration.visibility = View.VISIBLE
+            } else {
+                ivIllustration.visibility = View.GONE
+            }
+        } else {
+            ivIllustration.visibility = View.GONE
+        }
     }
 }

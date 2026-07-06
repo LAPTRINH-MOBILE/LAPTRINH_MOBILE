@@ -35,7 +35,7 @@ abstract class AppDatabase : RoomDatabase() {
     }
 }
 
-@Database(entities = [Word::class], version = 1, exportSchema = false)
+@Database(entities = [Word::class], version = 2, exportSchema = false)
 abstract class VocabularyDatabase : RoomDatabase() {
 
     abstract fun wordDao(): WordDao

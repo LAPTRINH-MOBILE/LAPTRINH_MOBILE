@@ -5,15 +5,19 @@
         android:icon="@drawable/ic_home_outline"
         android:title="Trang chủ" />
     <item
-        android:id="@+id/nav_learn"
-        android:icon="@drawable/ic_school_outline"
-        android:title="Học tập" />
+        android:id="@+id/nav_vocab"
+        android:icon="@drawable/ic_flashcards"
+        android:title="Từ vựng" />
     <item
-        android:id="@+id/nav_books"
-        android:icon="@drawable/ic_book_open_outline"
-        android:title="Sách" />
+        android:id="@+id/nav_listening"
+        android:icon="@drawable/ic_audio"
+        android:title="Luyện nghe" />
     <item
-        android:id="@+id/nav_profile"
-        android:icon="@drawable/ic_person_outline"
-        android:title="Cá nhân" />
+        android:id="@+id/nav_stories"
+        android:icon="@drawable/ic_book_open"
+        android:title="Truyện" />
+    <item
+        android:id="@+id/nav_grammar"
+        android:icon="@drawable/ic_send"
+        android:title="Ngữ pháp" />
 </menu>
