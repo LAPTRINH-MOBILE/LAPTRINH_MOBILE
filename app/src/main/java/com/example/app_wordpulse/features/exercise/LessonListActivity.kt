@@ -2,46 +2,44 @@ package com.example.app_wordpulse.features.exercise
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.widget.LinearLayout
-import androidx.appcompat.app.AlertDialog
+import android.view.View
+import android.widget.ProgressBar
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.app_wordpulse.R
 
 class LessonListActivity : AppCompatActivity() {
+
+    private val viewModel: LessonListViewModel by viewModels()
+    private lateinit var categoryAdapter: CategoryAdapter
+    private lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lesson_list)
 
-        // GIẢ LẬP: Khi người dùng bấm vào một Video trên danh sách RecyclerView
-        // Chỗ này trong Adapter bạn sẽ gọi hàm showModeSelectionDialog(videoId)
-    }
+        progressBar = findViewById(R.id.progressBar)
+        val rvLessons: RecyclerView = findViewById(R.id.rvLessons)
+        rvLessons.layoutManager = LinearLayoutManager(this)
 
-    private fun showModeSelectionDialog(videoId: String) {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_choose_mode, null)
-        val builder = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .create()
-
-        val btnDictation = dialogView.findViewById<LinearLayout>(R.id.layoutDictation)
-        val btnShadowing = dialogView.findViewById<LinearLayout>(R.id.layoutShadowing)
-
-        // Nếu ấn chọn chế độ Nghe - Chép chính tả
-        btnDictation.setOnClickListener {
-            builder.dismiss()
+        categoryAdapter = CategoryAdapter(emptyList()) { lesson ->
             val intent = Intent(this, DictationActivity::class.java).apply {
-                putExtra("VIDEO_ID", videoId)
+                putExtra("VIDEO_ID", lesson.id.ifEmpty { lesson.videoId })
             }
             startActivity(intent)
         }
+        rvLessons.adapter = categoryAdapter
 
-        // Nếu chọn chế độ Phát âm (Shadowing)
-        btnShadowing.setOnClickListener {
-            builder.dismiss()
-            // Chuyển hướng sang ShadowingActivity tương ứng của bạn
+        viewModel.categories.observe(this) { categories ->
+            categoryAdapter.updateData(categories)
         }
 
-        builder.show()
+        viewModel.isLoading.observe(this) { isLoading ->
+            progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+
+        viewModel.loadCategories()
     }
 }

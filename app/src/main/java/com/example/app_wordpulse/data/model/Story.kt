@@ -24,6 +24,8 @@ data class Story(
     @ColumnInfo(name = "topic_id")
     val topicId: Int? = null,
 
+    val title: String? = null,
+
     @ColumnInfo(name = "story_content")
     val storyContent: String? = null,
 

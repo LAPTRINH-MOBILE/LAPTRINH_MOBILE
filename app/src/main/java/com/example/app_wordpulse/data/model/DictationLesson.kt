@@ -1,15 +1,39 @@
 package com.example.app_wordpulse.data.model
 
+import com.google.firebase.database.IgnoreExtraProperties
+import com.google.firebase.database.PropertyName
+
+@IgnoreExtraProperties
 data class TranscriptLine(
-    val id: Int,
-    val startTime: Float,        // Thời gian bắt đầu câu (giây)
-    val endTime: Float,          // Thời gian kết thúc câu (giây)
-    val text: String             // Câu gốc tiếng Anh đầy đủ
+    var id: Int = 0,
+    var startTime: Float = 0f,
+    var endTime: Float = 0f,
+    var text: String = "",
+    var translation: String = ""
 )
 
+@IgnoreExtraProperties
 data class DictationLesson(
-    val videoId: String,          // ID video YouTube (ví dụ: "dQw4w9WgXcQ")
-    val title: String,
-    val level: String,            // Easy, Normal, Hard
-    val transcripts: List<TranscriptLine>
+    var id: String = "",
+    var videoId: String = "",
+    var videoUrl: String = "",
+    @get:PropertyName("imageUrl") @set:PropertyName("imageUrl") var imageUrl: String = "",
+    var thumbnailUrl: String = "",
+    var title: String = "",
+    var level: String = "",
+    var duration: String = "",
+    var views: Int = 0,
+    @get:PropertyName("isPro") @set:PropertyName("isPro") var isPro: Boolean = false,
+    @get:PropertyName("isCompleted") @set:PropertyName("isCompleted") var isCompleted: Boolean = false,
+    var dictationDone: Boolean = false,
+    var shadowingDone: Boolean = false,
+    var transcripts: List<TranscriptLine> = emptyList()
+)
+
+@IgnoreExtraProperties
+data class LessonCategory(
+    var id: String = "",
+    var name: String = "",
+    var lessonCount: Int = 0,
+    var lessons: List<DictationLesson> = emptyList()
 )
