@@ -53,10 +53,10 @@ class GrammarViewModel(application: Application) : AndroidViewModel(application)
             topicId > 0 && selectedLevel != null -> dbHelper.getExercisesByTopicAndLevel(topicId, selectedLevel)
             topicId > 0 -> dbHelper.getExercisesByTopic(topicId)
             selectedLevel != null -> dbHelper.getExercisesByLevel(selectedLevel)
-            else -> dbHelper.getAllExercises().shuffled()
+            else -> dbHelper.getAllExercises()
         }
 
-        exercises = loadedExercises.take(SESSION_EXERCISE_COUNT)
+        exercises = loadedExercises.shuffled().take(SESSION_EXERCISE_COUNT)
         currentIndex = 0
         correctCount = 0
         wrongCount = 0
@@ -67,9 +67,15 @@ class GrammarViewModel(application: Application) : AndroidViewModel(application)
         publishScore()
     }
 
+    private fun normalizeAnswer(text: String): String {
+        return text.trim()
+            .trimEnd('.', '!', '?')
+            .trim()
+    }
+
     fun checkGrammar(userInput: String, correctAnswer: String): Boolean {
-        // So sánh đáp án theo yêu cầu: bỏ khoảng trắng hai đầu và không phân biệt hoa/thường.
-        val isCorrect = userInput.trim().equals(correctAnswer.trim(), ignoreCase = true)
+        // Compare the same text while ignoring only trailing sentence punctuation.
+        val isCorrect = normalizeAnswer(userInput).equals(normalizeAnswer(correctAnswer), ignoreCase = true)
 
         if (!hasCheckedCurrentExercise) {
             if (isCorrect) {
