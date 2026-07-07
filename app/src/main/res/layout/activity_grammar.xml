@@ -58,7 +58,7 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/questionCard"
         android:layout_width="0dp"
-        android:layout_height="150dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
         app:cardBackgroundColor="#EAF7FF"
         app:cardCornerRadius="8dp"
@@ -71,7 +71,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="16dp">
 
             <TextView
@@ -94,13 +94,13 @@
                 android:id="@+id/vietnameseSentenceTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:gravity="center"
                 android:lineSpacingExtra="4dp"
                 android:text="Tôi có hai anh trai."
                 android:textColor="@color/text_primary"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@id/speakerButton"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvGrammarTopic" />
@@ -109,6 +109,7 @@
                 android:id="@+id/speakerButton"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:layout_marginTop="14dp"
                 android:background="@drawable/bg_grammar_speaker"
                 android:contentDescription="Phát âm"
                 android:padding="9dp"
@@ -116,7 +117,8 @@
                 android:tint="#2F6FF3"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/vietnameseSentenceTextView" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 

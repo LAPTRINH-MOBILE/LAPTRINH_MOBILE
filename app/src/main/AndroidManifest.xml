@@ -30,6 +30,7 @@
         <activity android:name=".features.vocabulary.VocabTopicActivity" />
         <activity android:name=".features.vocabulary.FlashcardActivity" />
         <activity android:name=".features.grammar.GrammarResultActivity" />
+        <activity android:name=".features.grammar.GrammarLevelSelectActivity" />
         <activity android:name=".features.grammar.GrammarActivity" />
         <activity android:name=".features.exercise.LessonListActivity" />
         <activity android:name=".features.exercise.DictationActivity" />

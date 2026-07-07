@@ -1,20 +1,15 @@
 package com.example.app_wordpulse
 
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.RadioButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.app_wordpulse.auth.AuthRepository
 import com.example.app_wordpulse.auth.LoginActivity
 import com.example.app_wordpulse.features.exercise.LessonListActivity
-import com.example.app_wordpulse.features.grammar.GrammarActivity
+import com.example.app_wordpulse.features.grammar.GrammarLevelSelectActivity
 import com.example.app_wordpulse.features.story.StoryLevelActivity
 import com.example.app_wordpulse.features.vocabulary.VocabTopicActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -41,6 +36,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
+        findViewById<View>(R.id.ivAvatar).setOnClickListener {
+            showLogoutDialog()
+        }
+
         findViewById<View>(R.id.btnListening).setOnClickListener {
             android.util.Log.d("MainActivity", "Listening clicked")
             startActivity(Intent(this, LessonListActivity::class.java))
@@ -59,7 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<View>(R.id.btnGrammar).setOnClickListener {
             android.util.Log.d("MainActivity", "Grammar clicked")
-            showGrammarLevelDialog()
+            openGrammarLevelSelect()
         }
 
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
@@ -79,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_grammar -> {
-                    showGrammarLevelDialog()
+                    openGrammarLevelSelect()
                     true
                 }
                 else -> false
@@ -92,47 +91,17 @@ class MainActivity : AppCompatActivity() {
         navigateToLogin()
     }
 
-    private fun showGrammarLevelDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_grammar_level, null)
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .create()
-
-        fun selectLevel(rowId: Int, radioId: Int, level: String) {
-            val row = dialogView.findViewById<LinearLayout>(rowId)
-            val radio = dialogView.findViewById<RadioButton>(radioId)
-            row.setOnClickListener {
-                clearLevelSelection(dialogView)
-                radio.isChecked = true
-                startActivity(
-                    Intent(this, GrammarActivity::class.java).apply {
-                        putExtra(GrammarActivity.EXTRA_LEVEL, level)
-                    }
-                )
-                dialog.dismiss()
-            }
-        }
-
-        dialogView.findViewById<ImageButton>(R.id.btnCloseLevelDialog).setOnClickListener {
-            dialog.dismiss()
-        }
-        dialogView.findViewById<TextView>(R.id.btnCancelLevelDialog).setOnClickListener {
-            dialog.dismiss()
-        }
-
-        selectLevel(R.id.rowA1, R.id.radioA1, "A1")
-        selectLevel(R.id.rowA2, R.id.radioA2, "A2")
-        selectLevel(R.id.rowB1, R.id.radioB1, "B1")
-        selectLevel(R.id.rowB2, R.id.radioB2, "B2")
-
-        dialog.show()
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    private fun showLogoutDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Đăng xuất")
+            .setMessage("Bạn có chắc muốn đăng xuất không?")
+            .setPositiveButton("Đăng xuất") { _, _ -> logout() }
+            .setNegativeButton("Hủy", null)
+            .show()
     }
 
-    private fun clearLevelSelection(dialogView: View) {
-        listOf(R.id.radioA1, R.id.radioA2, R.id.radioB1, R.id.radioB2).forEach { radioId ->
-            dialogView.findViewById<RadioButton>(radioId).isChecked = false
-        }
+    private fun openGrammarLevelSelect() {
+        startActivity(Intent(this, GrammarLevelSelectActivity::class.java))
     }
 
     private fun navigateToLogin() {

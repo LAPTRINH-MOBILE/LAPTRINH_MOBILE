@@ -20,6 +20,16 @@
     <color name="text_primary">#1A1A2E</color>
     <color name="text_muted">#6B7280</color>
 
+    <color name="grammar_level_screen_bg">#F8FAFC</color>
+    <color name="grammar_level_a1_bg">#D6EAF8</color>
+    <color name="grammar_level_a1_text">#2E86DE</color>
+    <color name="grammar_level_a2_bg">#E8F8ED</color>
+    <color name="grammar_level_a2_text">#27AE60</color>
+    <color name="grammar_level_b1_bg">#FDF0DD</color>
+    <color name="grammar_level_b1_text">#E67E22</color>
+    <color name="grammar_level_b2_bg">#F3E8FB</color>
+    <color name="grammar_level_b2_text">#8E44AD</color>
+
     <color name="strength_medium">#FFB100</color>
     <color name="strength_strong">#4CAF50</color>
 
