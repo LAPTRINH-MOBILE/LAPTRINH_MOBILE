@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.app_wordpulse.auth.AuthRepository
 import com.example.app_wordpulse.auth.LoginActivity
@@ -35,6 +36,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
+        findViewById<View>(R.id.ivAvatar).setOnClickListener {
+            showLogoutDialog()
+        }
+
         findViewById<View>(R.id.btnListening).setOnClickListener {
             android.util.Log.d("MainActivity", "Listening clicked")
             startActivity(Intent(this, LessonListActivity::class.java))
@@ -84,6 +89,15 @@ class MainActivity : AppCompatActivity() {
     private fun logout() {
         authRepository.logout()
         navigateToLogin()
+    }
+
+    private fun showLogoutDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Đăng xuất")
+            .setMessage("Bạn có chắc muốn đăng xuất không?")
+            .setPositiveButton("Đăng xuất") { _, _ -> logout() }
+            .setNegativeButton("Hủy", null)
+            .show()
     }
 
     private fun openGrammarLevelSelect() {

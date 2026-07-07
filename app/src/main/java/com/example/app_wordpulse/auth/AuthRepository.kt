@@ -2,6 +2,7 @@ package com.example.app_wordpulse.auth
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.example.app_wordpulse.data.local.preferences.UserPreferences
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -78,6 +79,7 @@ class AuthRepository(private val context: Context) {
 
     fun logout() {
         prefs.edit().remove(KEY_CURRENT_USER).apply()
+        UserPreferences(context).saveLoginStatus(false)
     }
 
     fun getCurrentUser(): User? {

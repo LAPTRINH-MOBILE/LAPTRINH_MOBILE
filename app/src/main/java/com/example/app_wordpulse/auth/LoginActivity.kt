@@ -2,11 +2,16 @@ package com.example.app_wordpulse.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.View
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.app_wordpulse.MainActivity
+import com.example.app_wordpulse.R
 import com.example.app_wordpulse.databinding.ActivityLoginBinding
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
@@ -26,7 +31,41 @@ class LoginActivity : AppCompatActivity() {
             navigateToMain()
         }
 
+        setupPasswordVisibilityToggle()
         setupListeners()
+    }
+
+    private fun setupPasswordVisibilityToggle() {
+        setupPasswordToggle(binding.tilPassword, binding.etPassword)
+    }
+
+    private fun setupPasswordToggle(textInputLayout: TextInputLayout, editText: EditText) {
+        var isPasswordVisible = false
+        editText.transformationMethod = PasswordTransformationMethod.getInstance()
+        textInputLayout.setEndIconDrawable(R.drawable.ic_eye)
+        textInputLayout.setEndIconContentDescription("Hiện mật khẩu")
+
+        textInputLayout.setEndIconOnClickListener {
+            val selection = editText.selectionEnd
+            isPasswordVisible = !isPasswordVisible
+
+            editText.transformationMethod = if (isPasswordVisible) {
+                HideReturnsTransformationMethod.getInstance()
+            } else {
+                PasswordTransformationMethod.getInstance()
+            }
+
+            textInputLayout.setEndIconDrawable(
+                if (isPasswordVisible) R.drawable.ic_eye_off else R.drawable.ic_eye
+            )
+            textInputLayout.setEndIconContentDescription(
+                if (isPasswordVisible) "Ẩn mật khẩu" else "Hiện mật khẩu"
+            )
+
+            if (selection >= 0) {
+                editText.setSelection(selection.coerceAtMost(editText.text?.length ?: 0))
+            }
+        }
     }
 
     private fun setupListeners() {
