@@ -132,37 +132,30 @@ class FlashcardActivity : AppCompatActivity() {
 
         isFlipAnimating = true
         cvFlashcard.isClickable = false
+        
+        // Start first half of rotation
         cvFlashcard.animate()
             .rotationY(90f)
             .setDuration(FLIP_HALF_DURATION)
             .setInterpolator(AccelerateInterpolator())
-            .withLayer()
             .setListener(object : AnimatorListenerAdapter() {
-                private var cancelled = false
-
-                override fun onAnimationCancel(animation: Animator) {
-                    cancelled = true
-                }
-
                 override fun onAnimationEnd(animation: Animator) {
-                    cvFlashcard.animate().setListener(null)
-                    if (cancelled) {
-                        finishFlipAnimation()
-                        return
-                    }
-
+                    // Change content at 90 degrees (invisible)
                     isShowingDefinition = !isShowingDefinition
                     updateCardDisplay()
+                    
+                    // Immediately jump to -90 degrees
                     cvFlashcard.rotationY = -90f
+                    
+                    // Start second half of rotation
                     cvFlashcard.animate()
                         .rotationY(0f)
                         .setDuration(FLIP_HALF_DURATION)
                         .setInterpolator(DecelerateInterpolator())
-                        .withLayer()
                         .setListener(object : AnimatorListenerAdapter() {
                             override fun onAnimationEnd(animation: Animator) {
-                                cvFlashcard.animate().setListener(null)
-                                finishFlipAnimation()
+                                isFlipAnimating = false
+                                cvFlashcard.isClickable = true
                             }
                         })
                         .start()
