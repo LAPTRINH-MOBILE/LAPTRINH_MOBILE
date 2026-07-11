@@ -9,7 +9,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.app_wordpulse.MainActivity
 import com.example.app_wordpulse.R
-import com.google.android.material.button.MaterialButton
+import com.example.app_wordpulse.features.exercise.LessonListActivity
+import com.example.app_wordpulse.features.grammar.GrammarLevelSelectActivity
+import com.example.app_wordpulse.features.vocabulary.VocabTopicActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class StoryLevelActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,25 +20,51 @@ class StoryLevelActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_story_level)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        val mainLayout = findViewById<View>(R.id.main_layout)
+        ViewCompat.setOnApplyWindowInsetsListener(mainLayout) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Sử dụng View chung vì các container bây giờ là LinearLayout thay vì MaterialButton
+        // Click listeners for level buttons
         findViewById<View>(R.id.btnA1).setOnClickListener { openStoryTopic("A1") }
         findViewById<View>(R.id.btnA2).setOnClickListener { openStoryTopic("A2") }
         findViewById<View>(R.id.btnB1).setOnClickListener { openStoryTopic("B1") }
         findViewById<View>(R.id.btnB2).setOnClickListener { openStoryTopic("B2") }
 
-        // Sự kiện quay về trang chủ (Vẫn là MaterialButton)
-        findViewById<MaterialButton>(R.id.btnBackHome).setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            // Xóa các màn hình trung gian để tránh lỗi xếp chồng màn hình
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            startActivity(intent)
-            finish()
+        setupBottomNavigation()
+    }
+
+    private fun setupBottomNavigation() {
+        val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+        bottomNavigation.selectedItemId = R.id.nav_stories
+        
+        bottomNavigation.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                    true
+                }
+                R.id.nav_vocab -> {
+                    startActivity(Intent(this, VocabTopicActivity::class.java))
+                    finish()
+                    true
+                }
+                R.id.nav_listening -> {
+                    startActivity(Intent(this, LessonListActivity::class.java))
+                    finish()
+                    true
+                }
+                R.id.nav_stories -> true
+                R.id.nav_grammar -> {
+                    startActivity(Intent(this, GrammarLevelSelectActivity::class.java))
+                    finish()
+                    true
+                }
+                else -> false
+            }
         }
     }
 

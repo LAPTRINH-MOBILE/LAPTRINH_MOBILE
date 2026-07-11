@@ -1,5 +1,7 @@
 package com.example.app_wordpulse.features.story
 
+import android.speech.tts.TextToSpeech
+import java.util.Locale
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -28,7 +30,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class StoryQuizActivity : AppCompatActivity() {
+class StoryQuizActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
+
+    private var tts: TextToSpeech? = null
 
     private var questionList: List<Story> = emptyList()
     private var currentIndex = 0
@@ -44,6 +48,8 @@ class StoryQuizActivity : AppCompatActivity() {
     private lateinit var tvResultStatus: TextView
     private lateinit var tvExplanation: TextView
     private lateinit var actionButton: MaterialButton
+    private lateinit var reminderCard: MaterialCardView
+    private lateinit var btnTTS: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +65,7 @@ class StoryQuizActivity : AppCompatActivity() {
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowTitleEnabled(false) // Ẩn tiêu đề mặc định để dùng TextView căn giữa
         toolbar.setNavigationOnClickListener { showExitDialog() }
 
         // Xử lý nút back hệ thống
@@ -69,6 +76,7 @@ class StoryQuizActivity : AppCompatActivity() {
         })
 
         initViews()
+        tts = TextToSpeech(this, this)
 
         val topicId = intent.getIntExtra("TOPIC_ID", -1)
         if (topicId != -1) {
@@ -87,6 +95,16 @@ class StoryQuizActivity : AppCompatActivity() {
         tvResultStatus = findViewById(R.id.tvResultStatus)
         tvExplanation = findViewById(R.id.tvExplanation)
         actionButton = findViewById(R.id.actionButton)
+        reminderCard = findViewById(R.id.reminderCard)
+        btnTTS = findViewById(R.id.btnTTS)
+
+        btnTTS.setOnClickListener {
+            val story = questionList.getOrNull(currentIndex)
+            if (story != null) {
+                val textToRead = "${story.storyContent}. ${story.question}"
+                tts?.speak(textToRead, TextToSpeech.QUEUE_FLUSH, null, "StoryTTS")
+            }
+        }
 
         radios = listOf(
             findViewById(R.id.radioA),
@@ -107,6 +125,7 @@ class StoryQuizActivity : AppCompatActivity() {
                 radios.forEach { it.isChecked = false }
                 radioButton.isChecked = true
                 updateCardSelection(index)
+                reminderCard.visibility = View.GONE
             }
             cards[index].setOnClickListener(clickListener)
             radioButton.setOnClickListener(clickListener)
@@ -178,7 +197,11 @@ class StoryQuizActivity : AppCompatActivity() {
     private fun checkAnswer() {
         val selectedIndex = radios.indexOfFirst { it.isChecked }
         if (selectedIndex == -1) {
-            Toast.makeText(this, "Vui lòng chọn 1 đáp án!", Toast.LENGTH_SHORT).show()
+            reminderCard.visibility = View.VISIBLE
+            // Tự động ẩn sau 3 giây
+            reminderCard.postDelayed({
+                reminderCard.visibility = View.GONE
+            }, 3000)
             return
         }
 
@@ -244,6 +267,25 @@ class StoryQuizActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            val result = tts?.setLanguage(Locale.US)
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Toast.makeText(this, "Ngôn ngữ không được hỗ trợ", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(this, "Khởi tạo TTS thất bại", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onDestroy() {
+        if (tts != null) {
+            tts?.stop()
+            tts?.shutdown()
+        }
+        super.onDestroy()
     }
 
     private fun showExitDialog() {

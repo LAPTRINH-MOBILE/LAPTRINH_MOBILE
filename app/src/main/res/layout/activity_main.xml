@@ -65,7 +65,7 @@
                     android:layout_marginEnd="12dp"
                     android:fontFamily="sans-serif-medium"
                     android:includeFontPadding="false"
-                    android:text="App Học Tiếng Anh"
+                    android:text="WordPulse"
                     android:textColor="@color/white"
                     android:textSize="24sp"
                     android:textStyle="bold"
